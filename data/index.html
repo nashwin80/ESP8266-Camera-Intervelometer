@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+	<meta charset="utf-8" />
+	<head>
+		<title>Camera Intervelometer</title>
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<script language="javascript" type="text/javascript">
+
+		//var wsUri = "ws://echo.websocket.org/";
+		var wsUri = "ws://192.168.4.1:81/";
+		var output;
+		var websocket;
+
+		function init()
+		{
+			output = document.getElementById("output");
+			websocket = new WebSocket(wsUri);
+			testWebSocket();
+			updateShotCount();
+		}
+
+		function testWebSocket()
+		{
+			websocket = new WebSocket(wsUri);
+			websocket.onopen = function(evt) { onOpen(evt) };
+			websocket.onclose = function(evt) { onClose(evt) };
+			websocket.onmessage = function(evt) { onMessage(evt) };
+			websocket.onerror = function(evt) { onError(evt) };
+		}
+
+		function onOpen(evt)
+		{
+			doSend("CONNECTED");
+		}
+
+		function onClose(evt)
+		{
+			writeToScreen("DISCONNECTED");
+		}
+
+		function onMessage(evt)
+		{
+			writeToScreen('<span style="color: blue;">' + evt.data+'</span>');
+		}
+
+		function onError(evt)
+		{
+			writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+		}
+
+		function doSend(message)
+		{
+			websocket.send(message);
+		}
+
+		function updateShotCount(){
+			setTimeout(updateShotCount,1000);
+			doSend("shotCount");
+		}
+
+		function writeToScreen(message)
+		{
+			output.innerHTML = message;
+		}
+
+		function sendMessage(element){
+			var onAngle = document.getElementById('onAngle').value;
+			var offAngle = document.getElementById('offAngle').value;
+			var delay = document.getElementById('delay').value;
+			var limit = document.getElementById('limit').value;
+
+			if (element == "stop"){
+				doSend(element + ":" + 0);
+			} else if (element == "start"){
+				if (validateElement(onAngle) && validateElement(offAngle) && validateElement(delay) && validateElement(limit)){
+							doSend(element + ":" + document.getElementById('onAngle').value + "," +
+								document.getElementById('offAngle').value + "," + document.getElementById('delay').value +
+									 "," + document.getElementById('limit').value);
+				} else {
+					writeToScreen("Only Numbers Allowed");
+				}
+			} else {
+				if (validateElement(document.getElementById(element).value))
+					doSend(element + ":" + document.getElementById(element).value);
+				else {
+					writeToScreen("Only Numbers Allowed");
+				}
+			}
+		}
+
+		function validateElement(element){
+			if (!isNaN(element) && !(element==="")){
+				return true;
+			} else{
+				return false;
+			}
+		}
+
+		function increment(element){
+			document.getElementById(element).value = Number(document.getElementById(element).value) + 1;
+			doSend(element + ":" + document.getElementById(element).value);
+		}
+
+		function decrement(element){
+			document.getElementById(element).value = Number(document.getElementById(element).value) - 1;
+			if (document.getElementById(element).value < 0) {
+				document.getElementById(element).value = 0;
+			}
+			doSend(element + ":" + document.getElementById(element).value);
+		}
+
+		window.addEventListener("load", init, false);
+
+		</script>
+
+	</head>
+
+	<body>
+
+		<h2>Camera Intervelometer</h2>
+
+		<div id="container">
+			<input id="onAngle" type="number"/>
+				<button id="addOnAngle" class="myButton" onclick="increment('onAngle')">+</button>
+				<button id="decreaseOnAngle" class="myButton" onclick="decrement('onAngle')">-</button>
+					<button id="onAngleFire" class="myButton" onclick="sendMessage('onAngle')">Set On Angle</button>
+			<br/>
+			<input id="offAngle" type="number"/>
+				<button id="addOffAngle" class="myButton" onclick="increment('offAngle')">+</button>
+				<button id="decreaseOffAngle" class="myButton" onclick="decrement('offAngle')">-</button>
+					<button id="offAngleFire" class="myButton" onclick="sendMessage('offAngle')">Set Off Angle</button>
+			<br/>
+			<input id="delay" type="number"/>
+				<button id="addDelay" class="myButton" onclick="increment('delay')">+</button>
+				<button id="decreaseDelay" class="myButton" onclick="decrement('delay')">-</button>
+					<button id="offAngleFire" class="myButton" onclick="sendMessage('delay')">Set Delay</button>
+			<br/>
+			<input id="limit" type="number" value='0' />
+					<button id="shotLimit" class="myButton" onclick="sendMessage('limit')">Set Shots Limit</button>
+			<br/>
+			<button id="start" class="start"  onclick="sendMessage('start')">Start</button>
+			<button id="stop" class="stop"  onclick="sendMessage('stop')">Stop</button>
+		</div>
+
+		<div id="output"></div>
+
+	</body>
+</html>
