@@ -7,6 +7,11 @@
   - Metal gear servo
   - USB cable
   - Power Bank
+  - Sawed Off Ruler
+  - SuperGlue to stick the servo to the sawed off ruler
+  - 1/4" Mount Adapter for Tripod Screw to Flash Hot Shoe
+  - DuPont wire
+  - Breadboard Jumper Cable
   
 ##Usage:
   Upload sketch to your ESP8266
