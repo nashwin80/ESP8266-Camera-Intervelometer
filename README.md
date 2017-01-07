@@ -22,15 +22,15 @@
   Open the URL 192.168.4.1 which is the default ESP8266 ip when in access point mode. 
   
   The interface will let you choose the following:-
-  ###On Angle
+######On Angle
     This is the angle at which the servo will press the camera button to take a shot
-  ###Off Angle
+######Off Angle
     This is the angle at which the servo will release the camera button
-  ###DelaySeconds
+######DelaySeconds
     The is the delay between shots in seconds
-  ###DelayMinutes
+######DelayMinutes
     The is the delay between shots in Minutes
-  ###Number of Shots
+######Number of Shots
     This limits how many shots are taken. After the number of shots the servo will not fire unless the start button is clicked again.
     
 ##TBD
